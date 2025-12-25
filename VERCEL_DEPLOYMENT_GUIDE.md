@@ -1,4 +1,4 @@
-# 🚀 Vercel Deployment Guide for FinTrack
+# 🚀 Vercel Deployment Guide for FinTrack (with Supabase Database)
 
 ## ✅ Prerequisites
 
@@ -6,10 +6,169 @@ Before deploying to Vercel, ensure:
 - ✅ All code is committed and pushed to GitHub
 - ✅ You have a Vercel account
 - ✅ Your repository is connected to Vercel
+- ✅ You have a Supabase account (free tier available)
 
 ---
 
-## 🔧 Step 1: Fix Prisma Build Issue
+## 🗄️ Step 1: Set Up Supabase Database (REQUIRED)
+
+### Why Supabase?
+- ✅ **Free tier** - 500MB database, perfect for this app
+- ✅ **PostgreSQL** - Works perfectly with Vercel
+- ✅ **Full CRUD** - Add, edit, delete transactions work perfectly
+- ✅ **Persistent data** - Data doesn't reset on deployment
+
+### Create Supabase Project:
+
+1. **Go to Supabase:** https://supabase.com
+2. **Sign up/Login** with GitHub
+3. **Click "New Project"**
+4. **Fill in details:**
+   - **Name:** `fin-track` or any name you like
+   - **Database Password:** Create a strong password (SAVE THIS!)
+   - **Region:** Choose closest to you
+   - **Plan:** Free (perfect for this app)
+5. **Click "Create new project"**
+6. **Wait 2-3 minutes** for setup to complete
+
+### Get Connection String:
+
+1. In your Supabase project dashboard
+2. Go to **Settings** (gear icon) → **Database**
+3. Scroll to **Connection string**
+4. Select **URI** tab
+5. Copy the connection string - it looks like:
+   ```
+   postgresql://postgres:[YOUR-PASSWORD]@db.xxxxx.supabase.co:5432/postgres
+   ```
+6. **Replace `[YOUR-PASSWORD]`** with the password you created
+7. **SAVE THIS STRING** - you'll need it!
+
+---
+
+## 🔧 Step 2: Update Prisma Schema
+
+Update your `prisma/schema.prisma` file to use PostgreSQL:
+
+```prisma
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  icon         String
+  color        String
+  type         CategoryType
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  amount      Float
+  description String
+  date        DateTime
+  type        TransactionType
+  categoryId  String
+  category    Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+```
+
+**Key changes:**
+- Changed `provider = "sqlite"` → `provider = "postgresql"`
+- Changed `url = "file:./dev.db"` → `url = env("DATABASE_URL")`
+- Added `directUrl = env("DIRECT_URL")`
+
+---
+
+## ⚙️ Step 3: Configure Environment Variables
+
+### On Vercel (Production):
+
+1. Go to your Vercel project dashboard
+2. Navigate to **Settings** → **Environment Variables**
+3. Add these variables:
+
+**Variable 1:**
+- **Key:** `DATABASE_URL`
+- **Value:** Your Supabase connection string with `?pgbouncer=true` at the end
+  ```
+  postgresql://postgres:[PASSWORD]@db.xxxxx.supabase.co:5432/postgres?pgbouncer=true
+  ```
+- **Environments:** Production, Preview, Development
+
+**Variable 2:**
+- **Key:** `DIRECT_URL`
+- **Value:** Your Supabase connection string WITHOUT `?pgbouncer=true`
+  ```
+  postgresql://postgres:[PASSWORD]@db.xxxxx.supabase.co:5432/postgres
+  ```
+- **Environments:** Production, Preview, Development
+
+### Locally (.env file):
+
+Create or update `.env` in your project root:
+
+```env
+# .env
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.xxxxx.supabase.co:5432/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres:[YOUR-PASSWORD]@db.xxxxx.supabase.co:5432/postgres"
+```
+
+**Important:** Replace `[YOUR-PASSWORD]` and `xxxxx` with your actual values!
+
+---
+
+## 🔨 Step 4: Initialize Database Locally
+
+Run these commands in your terminal:
+
+```bash
+cd "/Users/sopheappit/Desktop/Intensive Internship/fin-track"
+
+# Generate Prisma Client with new PostgreSQL schema
+npx prisma generate
+
+# Push schema to Supabase database
+npx prisma db push
+
+# Seed the database with categories and sample data
+npm run db:seed
+```
+
+**Expected output:**
+```
+✓ Generated Prisma Client
+✓ Your database is now in sync with your schema
+✓ Database seeded successfully!
+```
+
+---
+
+## 🔧 Step 5: Fix Prisma Build Issue (Already Done)
 
 ### Problem
 Vercel caches dependencies, which prevents Prisma Client from being generated automatically.
@@ -31,7 +190,7 @@ This automatically generates Prisma Client after npm install on Vercel.
 
 ---
 
-## 📝 Step 2: Configure Vercel Project
+## 📝 Step 6: Configure Vercel Project
 
 ### Option A: Deploy via Vercel Dashboard
 
@@ -60,124 +219,75 @@ vercel
 
 ---
 
-## ⚙️ Step 3: Environment Variables (Optional)
+## 🚀 Step 7: Deploy!
 
-If you need environment variables for production:
-
-1. Go to your Vercel project dashboard
-2. Navigate to **Settings** → **Environment Variables**
-3. Add variables if needed:
-   - `DATABASE_URL` - (Optional, using SQLite file)
-   - `NODE_ENV` - production (automatically set)
-
-**Note:** For this project using SQLite, no additional environment variables are required.
-
----
-
-## 🗄️ Step 4: Database Considerations
-
-### Current Setup: SQLite
-- ✅ Works locally
-- ⚠️ **Vercel Limitation:** SQLite file system is read-only in production
-
-### For Production Deployment, You Have Two Options:
-
-#### Option A: Keep SQLite (Read-Only Demo)
-- Good for: Demo/Portfolio projects
-- Limitation: Database resets on each deployment
-- No changes needed - deploy as is!
-
-#### Option B: Migrate to PostgreSQL (Recommended for Production)
-If you want persistent data, use a database service:
-
-**Recommended Services:**
-1. **Vercel Postgres** (Easiest)
-2. **Supabase** (Free tier)
-3. **Railway** (Simple setup)
-4. **Neon** (Serverless Postgres)
-
-**Migration Steps (if needed):**
-1. Create a PostgreSQL database
-2. Get the connection string
-3. Update `prisma/schema.prisma`:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   ```
-4. Add `DATABASE_URL` to Vercel environment variables
-5. Push schema: `npx prisma db push`
-
----
-
-## 🚀 Step 5: Deploy!
-
-### Automatic Deployment
-Once configured, Vercel will automatically deploy when you push to `main`:
+### Commit and Push Changes
 
 ```bash
 git add .
-git commit -m "Ready for production deployment"
+git commit -m "Migrate to Supabase PostgreSQL database for production"
 git push origin main
 ```
 
-Vercel will:
+Vercel will automatically:
 1. ✅ Detect the push
 2. ✅ Install dependencies
 3. ✅ Run `postinstall` (generates Prisma Client)
-4. ✅ Build the Next.js app
-5. ✅ Deploy to production
+4. ✅ Connect to Supabase database
+5. ✅ Build the Next.js app
+6. ✅ Deploy to production
 
 ---
 
 ## ✅ Verification
 
-After deployment, verify:
+After deployment, test on your live Vercel URL:
 
-### 1. Build Logs
-Check the build logs in Vercel dashboard:
-- ✅ "prisma generate" should run during install
-- ✅ "Compiled successfully"
-- ✅ "Generating static pages"
-- ✅ No errors
+### Test All Operations:
 
-### 2. Test Your App
-Visit your deployed URL and test:
-- ✅ Homepage loads
-- ✅ Add transaction works
-- ✅ Charts display correctly
-- ✅ Light mode styling looks good
+1. ✅ **Add Transaction** - Should save to Supabase
+2. ✅ **Edit Transaction** - Should update in Supabase
+3. ✅ **Delete Transaction** - Should remove from Supabase
+4. ✅ **Refresh Page** - Data persists (doesn't disappear!)
+5. ✅ **Redeploy** - Data still there (doesn't reset!)
 
-**Note:** With SQLite, transactions won't persist between deployments.
+### Check Supabase:
+
+1. Go to your Supabase project
+2. Click **Table Editor**
+3. You should see your tables: `Category` and `Transaction`
+4. Click on tables to view data
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Issue: Prisma Client Error
-**Error:**
-```
-Prisma has detected that this project was built on Vercel...
-```
+### Issue: "Can't reach database server"
 
-**Fix:** ✅ Already applied! The `postinstall` script handles this.
+**Possible causes:**
+1. Wrong connection string
+2. Wrong password in connection string
+3. Missing `?pgbouncer=true` in DATABASE_URL
 
-### Issue: Database Not Found
-**Error:**
-```
-Can't reach database server
-```
-
-**Fix:** 
-- For SQLite: Ensure `prisma/dev.db` exists (it will be created on first build)
-- For PostgreSQL: Check your `DATABASE_URL` in environment variables
-
-### Issue: Build Timeout
 **Fix:**
-- Vercel has a 10-minute build timeout
-- Your build should complete in ~2-3 minutes
-- If it times out, check for infinite loops or large dependencies
+- Double-check your connection string
+- Verify password is correct
+- Ensure environment variables are set in Vercel
+
+### Issue: "SSL connection error"
+
+**Fix:** Add `?sslmode=require` to connection strings:
+```
+postgresql://...?pgbouncer=true&sslmode=require
+```
+
+### Issue: "Prepared statement already exists"
+
+**Fix:** This is why we use `directUrl` - it's already configured correctly!
+
+### Issue: Build succeeds but no data
+
+**Fix:** Run `npm run db:seed` locally to populate the database
 
 ---
 
@@ -189,7 +299,8 @@ Can't reach database server
   "scripts": {
     "postinstall": "prisma generate", // ✅ Generates Prisma Client
     "build": "next build",             // ✅ Builds Next.js
-    "start": "next start"              // ✅ Starts production server
+    "start": "next start",             // ✅ Starts production server
+    "db:seed": "tsx prisma/seed.ts"    // ✅ Seeds database
   }
 }
 ```
@@ -198,12 +309,13 @@ Can't reach database server
 // prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma" // ✅ Custom output path
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db" // ✅ Local SQLite database
+  provider  = "postgresql"              // ✅ PostgreSQL for Supabase
+  url       = env("DATABASE_URL")       // ✅ Pooled connection
+  directUrl = env("DIRECT_URL")         // ✅ Direct connection for migrations
 }
 ```
 
@@ -213,66 +325,75 @@ datasource db {
 
 Before deploying, ensure:
 
-- ✅ `postinstall` script is in package.json
+- ✅ Created Supabase project
+- ✅ Got connection string from Supabase
+- ✅ Updated `prisma/schema.prisma` to PostgreSQL
+- ✅ Added `DATABASE_URL` to Vercel environment variables
+- ✅ Added `DIRECT_URL` to Vercel environment variables
+- ✅ Updated local `.env` file
+- ✅ Ran `npx prisma db push`
+- ✅ Ran `npm run db:seed`
 - ✅ All TypeScript errors are fixed
 - ✅ Local build succeeds (`npm run build`)
 - ✅ All changes are committed and pushed
-- ✅ Vercel project is connected to GitHub repo
-- ✅ You understand SQLite limitations on Vercel
 
 ---
 
 ## 🎉 Success!
 
-Once deployed, your FinTrack app will be live at:
-```
-https://your-project-name.vercel.app
-```
+Once deployed, your FinTrack app will be live with:
 
-**Features Working:**
-- ✅ Beautiful light mode UI
-- ✅ Add/Edit/Delete transactions
-- ✅ Interactive charts
-- ✅ Statistics cards
-- ✅ Responsive design
+✅ **Full Database Functionality:**
+- Add transactions ✅
+- Edit transactions ✅
+- Delete transactions ✅
+- Data persists across deployments ✅
+- No data loss on redeploy ✅
 
-**Known Limitation:**
-- ⚠️ SQLite database resets on each deployment
-- 💡 For persistent data, migrate to PostgreSQL
+✅ **Features Working:**
+- Beautiful light mode UI
+- Interactive charts
+- Real-time statistics
+- Fully responsive design
 
 ---
 
-## 📝 Next Steps
+## 📝 Database Comparison
 
-### For Production Use:
-1. Migrate to PostgreSQL (see Option B above)
-2. Set up proper authentication
-3. Add user accounts
-4. Configure custom domain
-5. Set up monitoring and analytics
+### Before (SQLite):
+```
+Localhost: ✅ Full CRUD works
+Vercel:    ❌ READ-ONLY (no write/update/delete)
+Data:      ❌ Resets on each deployment
+```
 
-### For Demo/Portfolio:
-Your app is ready to showcase! Just note in your portfolio that it uses SQLite for demo purposes.
+### After (Supabase PostgreSQL):
+```
+Localhost: ✅ Full CRUD works
+Vercel:    ✅ Full CRUD works
+Data:      ✅ Persists forever
+```
 
 ---
 
 ## 🆘 Need Help?
 
+- **Supabase Docs:** https://supabase.com/docs
+- **Prisma with Supabase:** https://supabase.com/docs/guides/getting-started/quickstarts/prisma
 - **Vercel Docs:** https://vercel.com/docs
 - **Prisma on Vercel:** https://pris.ly/d/vercel-build
-- **Next.js Deployment:** https://nextjs.org/docs/deployment
 
 ---
 
 ## ✅ Summary
 
-**Status:** 🟢 Ready to Deploy!
+**Status:** 🟢 Ready to Deploy with Supabase!
 
-**Fixed:**
+**Setup:**
+- ✅ Supabase PostgreSQL database
 - ✅ Prisma Client generation with `postinstall`
-- ✅ All TypeScript errors
-- ✅ Build configuration
-- ✅ Light mode optimization
+- ✅ All TypeScript errors fixed
+- ✅ Full CRUD operations working
+- ✅ Persistent data storage
 
-**Your FinTrack app is production-ready!** 🚀
-
+**Your FinTrack app is production-ready with a real database!** 🚀
