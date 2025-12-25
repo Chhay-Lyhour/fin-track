@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, Calendar } from "lucide-react"
+import { TrendingUp, TrendingDown, Calendar, CheckCircle, AlertTriangle, BarChart3 } from "lucide-react"
 
 interface WeeklySummaryProps {
   thisWeek: {
@@ -41,7 +41,8 @@ export function WeeklySummary({ thisWeek, lastWeek }: WeeklySummaryProps) {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
-          📅 This Week vs Last Week
+          <Calendar className="h-5 w-5 text-blue-600" />
+          This Week vs Last Week
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -103,11 +104,31 @@ export function WeeklySummary({ thisWeek, lastWeek }: WeeklySummaryProps) {
 
         {/* Weekly Insight */}
         <div className="pt-3 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
-            {thisWeekBalance > lastWeekBalance && "💪 Better than last week!"}
-            {thisWeekBalance < lastWeekBalance && thisWeek.expenses < lastWeek.expenses && "📉 Lower expenses this week!"}
-            {thisWeekBalance < lastWeekBalance && thisWeek.expenses >= lastWeek.expenses && "⚠️ Watch your spending this week."}
-            {thisWeekBalance === lastWeekBalance && "📊 Same as last week."}
+          <p className="text-sm text-gray-600 flex items-center gap-2">
+            {thisWeekBalance > lastWeekBalance && (
+              <>
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                Better than last week!
+              </>
+            )}
+            {thisWeekBalance < lastWeekBalance && thisWeek.expenses < lastWeek.expenses && (
+              <>
+                <TrendingDown className="h-4 w-4 text-green-600" />
+                Lower expenses this week!
+              </>
+            )}
+            {thisWeekBalance < lastWeekBalance && thisWeek.expenses >= lastWeek.expenses && (
+              <>
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                Watch your spending this week.
+              </>
+            )}
+            {thisWeekBalance === lastWeekBalance && (
+              <>
+                <BarChart3 className="h-4 w-4 text-gray-600" />
+                Same as last week.
+              </>
+            )}
           </p>
         </div>
       </CardContent>

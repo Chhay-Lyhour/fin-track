@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp } from "lucide-react"
+import { TrendingUp, Trophy } from "lucide-react"
 
 interface CategorySpending {
   name: string
@@ -31,7 +31,8 @@ export function TopSpendingCategories({ categories }: TopSpendingProps) {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
-          🏆 Top Spending Categories
+          <Trophy className="h-5 w-5 text-yellow-600" />
+          Top Spending Categories
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

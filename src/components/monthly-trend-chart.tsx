@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { TrendingUp } from "lucide-react"
 
 interface MonthlyTrendData {
   month: string
@@ -55,7 +56,8 @@ export function MonthlyTrendChart({ data }: MonthlyTrendChartProps) {
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <CardTitle className="text-lg flex items-center gap-2">
-            📈 6-Month Expense Trend
+            <TrendingUp className="h-5 w-5 text-blue-600" />
+            6-Month Expense Trend
           </CardTitle>
           <div className="flex gap-4 text-sm flex-wrap">
             <div className="flex items-center gap-2">

@@ -9,6 +9,7 @@ import { MonthlyComparison } from "@/components/monthly-comparison"
 import { QuickStats } from "@/components/quick-stats"
 import { ExpenseChart, IncomeChart } from "@/components/charts"
 import { TransactionForm } from "@/components/transaction-form"
+import { BarChart3 } from "lucide-react"
 
 interface Transaction {
   id: string
@@ -122,7 +123,10 @@ export default function AnalyticsPage() {
         <div className="space-y-8">
           {/* Page Header */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">📊 Analytics Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <BarChart3 className="h-8 w-8 text-blue-600" />
+              Analytics Dashboard
+            </h1>
             <p className="text-gray-600 mt-1">Comprehensive financial insights and trends</p>
           </div>
 

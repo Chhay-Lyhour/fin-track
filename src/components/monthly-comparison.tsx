@@ -1,6 +1,6 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, TrendingDown, Minus } from "lucide-react"
+import { TrendingUp, TrendingDown, Minus, BarChart2, CheckCircle, AlertTriangle, ThumbsUp, Zap } from "lucide-react"
 interface MonthlyComparisonProps {
   current: {
     income: number
@@ -26,7 +26,8 @@ export function MonthlyComparison({ current, previous }: MonthlyComparisonProps)
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
-          📊 Monthly Comparison
+          <BarChart2 className="h-5 w-5 text-purple-600" />
+          Monthly Comparison
           <span className="text-sm font-normal text-gray-500">vs Last Month</span>
         </CardTitle>
       </CardHeader>
@@ -76,12 +77,37 @@ export function MonthlyComparison({ current, previous }: MonthlyComparisonProps)
           </div>
         </div>
         <div className="pt-3 border-t border-gray-200">
-          <p className="text-sm text-gray-600">
-            {incomeDiff > 0 && expenseDiff < 0 && "🎉 Great job! Income up, expenses down!"}
-            {incomeDiff > 0 && expenseDiff >= 0 && "👍 Income increased, watch your expenses."}
-            {incomeDiff <= 0 && expenseDiff < 0 && "💪 Expenses reduced, keep it up!"}
-            {incomeDiff <= 0 && expenseDiff >= 0 && "⚠️ Focus on increasing income & reducing expenses."}
-            {incomeDiff === 0 && expenseDiff === 0 && "📊 Same as last month."}
+          <p className="text-sm text-gray-600 flex items-center gap-2">
+            {incomeDiff > 0 && expenseDiff < 0 && (
+              <>
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                Great job! Income up, expenses down!
+              </>
+            )}
+            {incomeDiff > 0 && expenseDiff >= 0 && (
+              <>
+                <ThumbsUp className="h-4 w-4 text-blue-600" />
+                Income increased, watch your expenses.
+              </>
+            )}
+            {incomeDiff <= 0 && expenseDiff < 0 && (
+              <>
+                <Zap className="h-4 w-4 text-green-600" />
+                Expenses reduced, keep it up!
+              </>
+            )}
+            {incomeDiff <= 0 && expenseDiff >= 0 && (
+              <>
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                Focus on increasing income & reducing expenses.
+              </>
+            )}
+            {incomeDiff === 0 && expenseDiff === 0 && (
+              <>
+                <BarChart2 className="h-4 w-4 text-gray-600" />
+                Same as last month.
+              </>
+            )}
           </p>
         </div>
       </CardContent>
