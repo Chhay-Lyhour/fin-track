@@ -6,6 +6,8 @@ import { MonthlyTrendChart } from "@/components/monthly-trend-chart"
 import { TopSpendingCategories } from "@/components/top-spending"
 import { WeeklySummary } from "@/components/weekly-summary"
 import { MonthlyComparison } from "@/components/monthly-comparison"
+import { SavingsRate } from "@/components/savings-rate"
+import { SpendingVelocity } from "@/components/spending-velocity"
 import { QuickStats } from "@/components/quick-stats"
 import { ExpenseChart, IncomeChart } from "@/components/charts"
 import { TransactionForm } from "@/components/transaction-form"
@@ -130,6 +132,29 @@ export default function AnalyticsPage() {
             <p className="text-gray-600 mt-1">Comprehensive financial insights and trends</p>
           </div>
 
+          {/* Financial Report Summary */}
+          <FinancialReport
+            currentMonth={{
+              income: comparisonData.current.income,
+              expenses: comparisonData.current.expenses,
+              savings: comparisonData.current.income - comparisonData.current.expenses,
+              savingsRate: comparisonData.current.income > 0
+                ? ((comparisonData.current.income - comparisonData.current.expenses) / comparisonData.current.income * 100)
+                : 0
+            }}
+            previousMonth={{
+              income: comparisonData.previous.income,
+              expenses: comparisonData.previous.expenses,
+              savings: comparisonData.previous.income - comparisonData.previous.expenses,
+              savingsRate: comparisonData.previous.income > 0
+                ? ((comparisonData.previous.income - comparisonData.previous.expenses) / comparisonData.previous.income * 100)
+                : 0
+            }}
+            topCategory={topSpending.length > 0 ? topSpending[0] : null}
+            projectedExpenses={(comparisonData.current.expenses / new Date().getDate()) * new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()}
+            daysRemaining={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate()}
+          />
+
           {/* Quick Stats */}
           <QuickStats transactions={transactions} />
 
@@ -142,12 +167,27 @@ export default function AnalyticsPage() {
             <TopSpendingCategories categories={topSpending} />
           </div>
 
-          {/* Monthly Comparison and Charts */}
+          {/* Monthly Comparison and Analytics Cards */}
           <div className="grid gap-4 md:grid-cols-3">
             <MonthlyComparison
               current={comparisonData.current}
               previous={comparisonData.previous}
             />
+            <SavingsRate
+              income={comparisonData.current.income}
+              expenses={comparisonData.current.expenses}
+              previousIncome={comparisonData.previous.income}
+              previousExpenses={comparisonData.previous.expenses}
+            />
+            <SpendingVelocity
+              currentExpenses={comparisonData.current.expenses}
+              daysElapsed={new Date().getDate()}
+              totalDaysInMonth={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()}
+            />
+          </div>
+
+          {/* Expense and Income Charts */}
+          <div className="grid gap-4 md:grid-cols-2">
             <ExpenseChart data={statistics.categoryBreakdown} />
             <IncomeChart data={statistics.categoryBreakdown} />
           </div>
