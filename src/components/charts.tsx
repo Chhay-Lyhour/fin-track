@@ -9,6 +9,7 @@ interface CategoryBreakdown {
   color: string
   icon: string
   type: 'INCOME' | 'EXPENSE'
+  [key: string]: string | number
 }
 
 interface ExpenseChartProps {
@@ -44,7 +45,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
               outerRadius={80}
               fill="#8884d8"
               dataKey="amount"
@@ -53,7 +54,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+            <Tooltip formatter={(value: number | undefined) => value ? `$${value.toFixed(2)}` : '$0.00'} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
@@ -91,7 +92,7 @@ export function IncomeChart({ data }: ExpenseChartProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
               outerRadius={80}
               fill="#8884d8"
               dataKey="amount"
@@ -100,7 +101,7 @@ export function IncomeChart({ data }: ExpenseChartProps) {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+            <Tooltip formatter={(value: number | undefined) => value ? `$${value.toFixed(2)}` : '$0.00'} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>

@@ -13,11 +13,13 @@ interface Transaction {
   description: string
   date: string
   type: 'INCOME' | 'EXPENSE'
+  categoryId: string
   category: {
     id: string
     name: string
     icon: string
     color: string
+    type: 'INCOME' | 'EXPENSE'
   }
 }
 
