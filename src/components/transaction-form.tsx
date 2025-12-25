@@ -30,6 +30,7 @@ interface Transaction {
   date: string
   type: 'INCOME' | 'EXPENSE'
   categoryId: string
+  notes?: string | null
 }
 
 interface TransactionFormProps {
@@ -56,6 +57,7 @@ export function TransactionForm({
     description: transaction?.description || '',
     date: transaction?.date ? new Date(transaction.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     categoryId: transaction?.categoryId || '',
+    notes: transaction?.notes || '',
   })
 
 
@@ -68,6 +70,7 @@ export function TransactionForm({
         description: transaction.description,
         date: new Date(transaction.date).toISOString().split('T')[0],
         categoryId: transaction.categoryId,
+        notes: transaction.notes || '',
       })
     } else {
       setFormData({
@@ -75,6 +78,7 @@ export function TransactionForm({
         description: '',
         date: new Date().toISOString().split('T')[0],
         categoryId: '',
+        notes: '',
       })
       setType('EXPENSE')
     }
@@ -98,13 +102,14 @@ export function TransactionForm({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          amount: parseFloat(formData.amount),
-          description: formData.description,
-          date: new Date(formData.date).toISOString(),
-          type,
-          categoryId: formData.categoryId,
-        }),
+      body: JSON.stringify({
+        amount: parseFloat(formData.amount),
+        description: formData.description,
+        date: new Date(formData.date).toISOString(),
+        type,
+        categoryId: formData.categoryId,
+        notes: formData.notes || null,
+      }),
       })
 
       if (!response.ok) {
@@ -120,6 +125,7 @@ export function TransactionForm({
         description: '',
         date: new Date().toISOString().split('T')[0],
         categoryId: '',
+        notes: '',
       })
       setType('EXPENSE')
     } catch (error) {
@@ -252,8 +258,25 @@ export function TransactionForm({
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="min-h-[100px] resize-none border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-gray-50"
+              className="min-h-[80px] resize-none border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-gray-50"
               required
+            />
+          </div>
+
+          {/* Notes Textarea (Optional) */}
+          <div className="space-y-3">
+            <Label htmlFor="notes" className="text-sm font-semibold flex items-center gap-2 text-gray-900">
+              <FileText className="h-4 w-4 text-gray-700" />
+              Notes <span className="text-xs font-normal text-gray-500">(Optional)</span>
+            </Label>
+            <Textarea
+              id="notes"
+              placeholder="Add any additional notes or context..."
+              value={formData.notes}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
+              className="min-h-[60px] resize-none border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-gray-50"
             />
           </div>
 

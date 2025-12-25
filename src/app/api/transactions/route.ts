@@ -8,6 +8,7 @@ const transactionSchema = z.object({
   date: z.string().datetime(),
   type: z.enum(['INCOME', 'EXPENSE']),
   categoryId: z.string(),
+  notes: z.string().nullable().optional(),
 });
 
 // GET /api/transactions - Get all transactions
