@@ -1,41 +1,32 @@
 "use client"
-
 import { Card, CardContent } from "@/components/ui/card"
 import { TrendingUp, TrendingDown, DollarSign } from "lucide-react"
-
 interface Transaction {
   id: string
   amount: number
   type: 'INCOME' | 'EXPENSE'
 }
-
 interface QuickStatsProps {
   transactions: Transaction[]
 }
-
 export function QuickStats({ transactions }: QuickStatsProps) {
   const expenses = transactions.filter(t => t.type === 'EXPENSE')
   const incomes = transactions.filter(t => t.type === 'INCOME')
-
-  const avgExpense = expenses.length
-    ? expenses.reduce((sum, t) => sum + t.amount, 0) / expenses.length
+  const avgExpense = expenses.length 
+    ? expenses.reduce((sum, t) => sum + t.amount, 0) / expenses.length 
     : 0
-
-  const largestExpense = expenses.length
-    ? Math.max(...expenses.map(t => t.amount))
+  const largestExpense = expenses.length 
+    ? Math.max(...expenses.map(t => t.amount)) 
     : 0
-
-  const largestIncome = incomes.length
-    ? Math.max(...incomes.map(t => t.amount))
+  const largestIncome = incomes.length 
+    ? Math.max(...incomes.map(t => t.amount)) 
     : 0
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(amount)
   }
-
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card className="border-l-4 border-l-blue-500">
@@ -54,7 +45,6 @@ export function QuickStats({ transactions }: QuickStatsProps) {
           </div>
         </CardContent>
       </Card>
-
       <Card className="border-l-4 border-l-red-500">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
@@ -71,7 +61,6 @@ export function QuickStats({ transactions }: QuickStatsProps) {
           </div>
         </CardContent>
       </Card>
-
       <Card className="border-l-4 border-l-green-500">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
@@ -91,16 +80,3 @@ export function QuickStats({ transactions }: QuickStatsProps) {
     </div>
   )
 }
-  transactions: Transaction[]
-interface QuickStatsProps {
-
-}
-  type: 'INCOME' | 'EXPENSE'
-  amount: number
-  id: string
-interface Transaction {
-
-import { TrendingUp, TrendingDown, DollarSign } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-
-
