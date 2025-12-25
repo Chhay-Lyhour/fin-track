@@ -240,27 +240,6 @@ export default function Home() {
             transactionCount={statistics.transactionCount}
           />
 
-          {/* Quick Stats */}
-          <QuickStats transactions={transactions} />
-
-          {/* 6-Month Trend Chart - NEW! */}
-          {trendData.length > 0 && <MonthlyTrendChart data={trendData} />}
-
-          {/* Weekly Summary and Top Spending - NEW! */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <WeeklySummary thisWeek={weeklyData.thisWeek} lastWeek={weeklyData.lastWeek} />
-            <TopSpendingCategories categories={topSpending} />
-          </div>
-
-          {/* Monthly Comparison and Charts */}
-          <div className="grid gap-4 md:grid-cols-3">
-            <MonthlyComparison
-              current={comparisonData.current}
-              previous={comparisonData.previous}
-            />
-            <ExpenseChart data={statistics.categoryBreakdown} />
-            <IncomeChart data={statistics.categoryBreakdown} />
-          </div>
 
           {/* Transaction Filters */}
           <TransactionFilters
