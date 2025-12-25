@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Plus, Wallet } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Navbar } from "@/components/navbar"
 import { TransactionForm } from "@/components/transaction-form"
 import { TransactionList } from "@/components/transaction-list"
 import { TransactionFilters } from "@/components/transaction-filters"
@@ -228,21 +227,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Wallet className="h-6 w-6 text-gray-900" />
-              <h1 className="text-2xl font-bold text-gray-900">FinTrack</h1>
-            </div>
-            <Button onClick={() => setIsFormOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Transaction
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar onAddTransaction={() => setIsFormOpen(true)} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
