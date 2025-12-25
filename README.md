@@ -4,14 +4,14 @@ A modern, full-featured personal finance tracking application built with Next.js
 
 ## Features
 
-✨ **Core Features:**
-- 📊 Track income and expenses
-- 📈 Interactive charts and data visualization
-- 💰 Category-based budgeting
-- 📅 Monthly financial summaries
-- 🌓 Dark/Light mode support
-- 📱 Fully responsive design
-- ⚡ Real-time updates
+ **Core Features:**
+-  Track income and expenses
+-  Interactive charts and data visualization
+-  Category-based budgeting
+-  Monthly financial summaries
+-  Dark/Light mode support
+-  Fully responsive design
+-  Real-time updates
 
 ## Tech Stack
 
@@ -213,14 +213,14 @@ npm run dev
 
 ## Future Enhancements
 
-- 📊 Advanced analytics and reports
-- 🔄 Recurring transactions
-- 💾 Data export (CSV, PDF)
-- 🔍 Search and filter transactions
-- 👥 Multi-user support with authentication
-- 🌍 Multiple currency support
-- 📱 Progressive Web App (PWA)
-- 🔔 Budget alerts and notifications
+-  Advanced analytics and reports
+-  Recurring transactions
+-  Data export (CSV, PDF)
+-  Search and filter transactions
+-  Multi-user support with authentication
+-  Multiple currency support
+-  Progressive Web App (PWA)
+-  Budget alerts and notifications
 
 ## Deployment
 
@@ -252,5 +252,5 @@ For issues or questions:
 
 ---
 
-Built with ❤️ using Next.js, Prisma, and modern web technologies.
+Built with using Next.js, Prisma, and modern web technologies.
 
