@@ -138,7 +138,7 @@ export function TransactionForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px] bg-white">
+      <DialogContent className="sm:max-w-[550px] bg-white max-h-[80vh] overflow-y-auto">
         <DialogHeader className="space-y-3 pb-6">
           <DialogTitle className="text-2xl font-bold text-gray-900">
             {transaction ? '✏️ Edit Transaction' : '➕ Add Transaction'}

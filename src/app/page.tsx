@@ -9,6 +9,9 @@ import { TransactionFilters } from "@/components/transaction-filters"
 import { StatisticsCards } from "@/components/statistics-cards"
 import { MonthlyComparison } from "@/components/monthly-comparison"
 import { QuickStats } from "@/components/quick-stats"
+import { MonthlyTrendChart } from "@/components/monthly-trend-chart"
+import { TopSpendingCategories } from "@/components/top-spending"
+import { WeeklySummary } from "@/components/weekly-summary"
 import { ExpenseChart, IncomeChart } from "@/components/charts"
 
 interface Category {
@@ -64,24 +67,49 @@ export default function Home() {
     previous: { income: 0, expenses: 0 },
   })
 
+  // New features state
+  const [trendData, setTrendData] = useState<any[]>([])
+  const [topSpending, setTopSpending] = useState<any[]>([])
+  const [weeklyData, setWeeklyData] = useState({
+    thisWeek: { income: 0, expenses: 0, transactions: 0 },
+    lastWeek: { income: 0, expenses: 0, transactions: 0 },
+  })
+
   const fetchData = async () => {
     try {
-      const [transactionsRes, categoriesRes, statisticsRes, comparisonRes] = await Promise.all([
+      const [
+        transactionsRes,
+        categoriesRes,
+        statisticsRes,
+        comparisonRes,
+        trendRes,
+        topSpendingRes,
+        weeklyRes
+      ] = await Promise.all([
         fetch('/api/transactions'),
         fetch('/api/categories'),
         fetch('/api/statistics'),
         fetch('/api/statistics/comparison'),
+        fetch('/api/statistics/trend'),
+        fetch('/api/statistics/top-spending'),
+        fetch('/api/statistics/weekly'),
       ])
 
       const transactionsData = await transactionsRes.json()
       const categoriesData = await categoriesRes.json()
       const statisticsData = await statisticsRes.json()
       const comparisonDataRes = await comparisonRes.json()
+      const trendDataRes = await trendRes.json()
+      const topSpendingDataRes = await topSpendingRes.json()
+      const weeklyDataRes = await weeklyRes.json()
 
       setTransactions(transactionsData)
       setCategories(categoriesData)
       setStatistics(statisticsData)
       setComparisonData(comparisonDataRes)
+      setTrendData(trendDataRes)
+      setTopSpending(topSpendingDataRes)
+      setWeeklyData(weeklyDataRes)
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -229,6 +257,15 @@ export default function Home() {
 
           {/* Quick Stats */}
           <QuickStats transactions={transactions} />
+
+          {/* 6-Month Trend Chart - NEW! */}
+          {trendData.length > 0 && <MonthlyTrendChart data={trendData} />}
+
+          {/* Weekly Summary and Top Spending - NEW! */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <WeeklySummary thisWeek={weeklyData.thisWeek} lastWeek={weeklyData.lastWeek} />
+            <TopSpendingCategories categories={topSpending} />
+          </div>
 
           {/* Monthly Comparison and Charts */}
           <div className="grid gap-4 md:grid-cols-3">
