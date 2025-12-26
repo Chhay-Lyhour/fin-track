@@ -9,7 +9,6 @@ A modern, full-featured personal finance tracking application built with Next.js
 -  Interactive charts and data visualization
 -  Category-based budgeting
 -  Monthly financial summaries
--  Dark/Light mode support
 -  Fully responsive design
 -  Real-time updates
 
@@ -162,11 +161,6 @@ fin-track/
 - **Edit Transaction**: Update existing transaction details
 - **Delete Transaction**: Remove transactions with confirmation
 - **Category Filtering**: Categories filtered by transaction type
-
-### Dark Mode
-- Toggle between light and dark themes
-- System preference detection
-- Persistent theme selection
 
 ### Responsive Design
 - Mobile-first approach
